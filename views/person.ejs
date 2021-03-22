@@ -1,0 +1,30 @@
+<%- include('partials/secretheader') %>
+
+<div class="jumbotron text-center">
+  <div class="container">
+  <div class="row">
+    <div class="col-md-6 img">
+      <img src="//style.anu.edu.au/_anu/4/images/placeholders/person.png"  alt="place holder" class="img-rounded">
+    </div>
+    <div class="col-md-6 details">
+      <blockquote>
+        <h3 id="selectedName"></h3>
+        <small><cite title="Source Title">Address not provided <i class="icon-map-marker"></i></cite></small>
+      </blockquote>
+      <h6>Email Id not provided</h6>
+      <small>Link not provided </small><br>
+      <small>DOB not provided</small>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  selected = JSON.parse(sessionStorage.getItem("selected"));
+  console.log(selected);
+  $("#selectedName").html(selected.label);
+</script>
+
+
+<%- include('partials/footer') %>
