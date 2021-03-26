@@ -84,11 +84,9 @@ passport.use(new GoogleStrategy({
   function(accessToken, refreshToken, profile, cb) {
     console.log(profile);
     User.findOrCreate(
-      { googleId: profile.id,
-        name: profile.displayName,
-        img: {
-          /////////////////////////////////////
-        }
+      {
+        googleId: profile.id,
+        name: profile.displayName
       }, function (err, user) {
       return cb(err, user);
     });
@@ -129,42 +127,64 @@ app.get("/secrets", function(req, res){
 });
 
 app.get("/person", function(req, res){
-  res.render("person", {Name : req.user.name});
+  if(req.isAuthenticated()){
+    res.render("person", {Name : req.user.name});
+  }
+  else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/myProfile", function(req, res){
-  res.render("myProfile", {Name : req.user.name, record : req.user});
+  if(req.isAuthenticated()){
+    res.render("myProfile", {Name : req.user.name, record : req.user});
+  }
+  else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/editdetails", function(req, res, next){
-  var idDetails = req.user.id;
-  var edit = User.findById(idDetails);
-  edit.exec(function(err, data){
-    if(err){
-      console.log(err);;
-    }
-    else{
-      res.render("editdetails", {Name : req.user.name, record : data});
-    }
-  });
+  if(req.isAuthenticated()){
+    var idDetails = req.user.id;
+    var edit = User.findById(idDetails);
+    edit.exec(function(err, data){
+      if(err){
+        console.log(err);
+      }
+      else{
+        res.render("editdetails", {Name : req.user.name, record : data});
+      }
+    });
+  }
+  else {
+    res.redirect("/login");
+  }
+
 });
 
 app.post("/update", function(req, res, next){
-  var idDetails = req.user.id;
-  var update = User.findOneAndUpdate(idDetails, {
-    name: req.body.name,
-    company: req.body.company,
-    link: req.body.link,
-    phoneNumber: req.body.phoneNumber,
-    address: req.body.address,
-    dob: req.body.dob
-  }, {useFindAndModify: false});
-  update.exec(function(err, data){
-    if(err){
-      console.log(err);;
-    }
-    res.redirect("/myProfile");
-  });
+  if(req.isAuthenticated()){
+    var idDetails = req.user.id;
+    var update = User.findOneAndUpdate(idDetails, {
+      name: req.body.name,
+      company: req.body.company,
+      link: req.body.link,
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      dob: req.body.dob
+    }, {useFindAndModify: false});
+    update.exec(function(err, data){
+      if(err){
+        console.log(err);;
+      }
+      res.redirect("/myProfile");
+    });
+  }
+  else {
+    res.redirect("/login");
+  }
+
 });
 
 app.post("/register", function(req, res){
